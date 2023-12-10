@@ -3,11 +3,36 @@ from typing import Optional
 from pydantic import BaseModel, Field
 
 
-class Job(BaseModel):
+class User(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     company_name: str = Field(...)
-    description: str = Field(...)
+    operator_full_name: str = Field(...)
     company_address: str = Field(...)
+    company_postcode: str = Field(...)
+    email: str = Field(...)
+    job_ids: Optional[list] = Field(...)
+
+    class Config:
+        allow_population_by_field_name = True
+        schema_extra = {}
+
+
+class UserUpdate(BaseModel):
+    company_name: Optional[str]
+    operator_full_name: Optional[str]
+    company_address: Optional[str]
+    company_postcode: Optional[str]
+    job_ids: Optional[list]
+
+    class Config:
+        allow_population_by_field_name = True
+        schema_extra = {}
+
+
+class Job(BaseModel):
+    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    job_title: str = Field(...)
+    description: str = Field(...)
     skill_requirement: list = Field(...)
     custom_requirements: list = Field(...)
 
@@ -17,9 +42,8 @@ class Job(BaseModel):
 
 
 class JobUpdate(BaseModel):
-    company_name: Optional[str]
+    job_title: Optional[str]
     description: Optional[str]
-    company_address: Optional[str]
     skill_requirement: Optional[list]
     custom_requirements: Optional[list]
 
