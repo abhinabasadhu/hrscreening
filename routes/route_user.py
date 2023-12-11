@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from typing import List
 
-from model import models_job
+from models import model_job
 
 router = APIRouter()
 
@@ -13,8 +13,8 @@ router = APIRouter()
 #####################
 
 
-@router.post("/", response_description="Create a new user", status_code=status.HTTP_201_CREATED, response_model=models_job.User)
-def create_user(request: Request, user: models_job.User = Body(...)):
+@router.post("/", response_description="Create a new user", status_code=status.HTTP_201_CREATED, response_model=model_job.User)
+def create_user(request: Request, user: model_job.User = Body(...)):
     user = jsonable_encoder(user)
     new_user = request.app.database["user"].insert_one(user)
     created_user = request.app.database["user"].find_one(
@@ -24,13 +24,13 @@ def create_user(request: Request, user: models_job.User = Body(...)):
     return created_user
 
 
-@router.get("/", response_description="List all users", response_model=List[models_job.User])
+@router.get("/", response_description="List all users", response_model=List[model_job.User])
 def list_user(request: Request):
     users = list(request.app.database["user"].find(limit=100))
     return users
 
 
-@router.get("/{id}", response_description="Get a single user by id", response_model=models_job.User)
+@router.get("/{id}", response_description="Get a single user by id", response_model=model_job.User)
 def find_user(id: str, request: Request):
     if (user := request.app.database["user"].find_one({"_id": id})) is not None:
         return user
@@ -38,8 +38,8 @@ def find_user(id: str, request: Request):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with ID {id} not found")
 
 
-@router.put("/{id}", response_description="Update a user", response_model=models_job.User)
-def update_user(id: str, request: Request, user: models_job.UserUpdate = Body(...)):
+@router.put("/{id}", response_description="Update a user", response_model=model_job.User)
+def update_user(id: str, request: Request, user: model_job.UserUpdate = Body(...)):
     user = {k: v for k, v in user.dict().items() if v is not None}
 
     if len(user) >= 1:

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from typing import List
 
-from model import models_candidate
+from models import model_candidate
 
 router = APIRouter()
 
@@ -12,8 +12,8 @@ router = APIRouter()
 #######################
 
 
-@router.post("/", response_description="Create a new candidate", status_code=status.HTTP_201_CREATED, response_model=models_candidate.Candidate)
-def create_candidate(request: Request, candidate: models_candidate.Candidate = Body(...)):
+@router.post("/", response_description="Create a new candidate", status_code=status.HTTP_201_CREATED, response_model=model_candidate.Candidate)
+def create_candidate(request: Request, candidate: model_candidate.Candidate = Body(...)):
     candidate = jsonable_encoder(candidate)
     new_candidate = request.app.database["candidate"].insert_one(candidate)
     created_candidate = request.app.database["candidate"].find_one(
@@ -23,13 +23,13 @@ def create_candidate(request: Request, candidate: models_candidate.Candidate = B
     return created_candidate
 
 
-@router.get("/", response_description="List all candidates", response_model=List[models_candidate.Candidate])
+@router.get("/", response_description="List all candidates", response_model=List[model_candidate.Candidate])
 def list_candidates(request: Request):
     candidates = list(request.app.database["candidate"].find(limit=100))
     return candidates
 
 
-@router.get("/{id}", response_description="Get a single candidate by id", response_model=models_candidate.Candidate)
+@router.get("/{id}", response_description="Get a single candidate by id", response_model=model_candidate.Candidate)
 def find_candidate(id: str, request: Request):
     if (candidate := request.app.database["candidate"].find_one({"_id": id})) is not None:
         return candidate
@@ -37,8 +37,8 @@ def find_candidate(id: str, request: Request):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Candidate with ID {id} not found")
 
 
-@router.put("/{id}", response_description="Update a candidate", response_model=models_candidate.Candidate)
-def update_candidate(id: str, request: Request, candidate: models_candidate.CandidateUpdate = Body(...)):
+@router.put("/{id}", response_description="Update a candidate", response_model=model_candidate.Candidate)
+def update_candidate(id: str, request: Request, candidate: model_candidate.CandidateUpdate = Body(...)):
     candidate = {k: v for k, v in candidate.dict().items() if v is not None}
 
     if len(candidate) >= 1:

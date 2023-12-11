@@ -1,7 +1,6 @@
 import uuid
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
-
 
 class User(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
@@ -10,7 +9,7 @@ class User(BaseModel):
     company_address: str = Field(...)
     company_postcode: str = Field(...)
     email: str = Field(...)
-    job_ids: Optional[list] = Field(...)
+    job_ids: Optional[list] = Field(default=[])
 
     class Config:
         allow_population_by_field_name = True
@@ -33,8 +32,9 @@ class Job(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     job_title: str = Field(...)
     description: str = Field(...)
-    skill_requirement: list = Field(...)
+    skill_requirements: list = Field(...)
     custom_requirements: list = Field(...)
+    candidates: Optional[list] = Field(default=[])
 
     class Config:
         allow_population_by_field_name = True
@@ -44,10 +44,10 @@ class Job(BaseModel):
 class JobUpdate(BaseModel):
     job_title: Optional[str]
     description: Optional[str]
-    skill_requirement: Optional[list]
+    skill_requirements: Optional[list]
     custom_requirements: Optional[list]
+    candidates: Optional[list]
 
     class Config:
         allow_population_by_field_name = True
         schema_extra = {}
-

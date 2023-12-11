@@ -3,7 +3,7 @@ from fastapi import APIRouter, Body, Request, Response, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from typing import List
 
-from model import models_job
+from models import model_job
 
 router = APIRouter()
 
@@ -14,8 +14,8 @@ router = APIRouter()
 
 
 @router.post("/{user_id}/", response_description="Create a new job", status_code=status.HTTP_201_CREATED,
-             response_model=models_job.Job)
-def create_job(request: Request, user_id: str, job: models_job.Job = Body(...)):
+             response_model=model_job.Job)
+def create_job(request: Request, user_id: str, job: model_job.Job = Body(...)):
     job = jsonable_encoder(job)
     new_job = request.app.database["job"].insert_one(job)
     created_job = request.app.database["job"].find_one(
@@ -33,13 +33,13 @@ def create_job(request: Request, user_id: str, job: models_job.Job = Body(...)):
     return created_job
 
 
-@router.get("/{user_id}/", response_description="List all jobs", response_model=List[models_job.Job])
+@router.get("/{user_id}/", response_description="List all jobs", response_model=List[model_job.Job])
 def list_jobs(request: Request):
     jobs = list(request.app.database["job"].find(limit=100))
     return jobs
 
 
-@router.get("/{user_id}/{id}", response_description="Get a single job by id", response_model=models_job.Job)
+@router.get("/{user_id}/{id}", response_description="Get a single job by id", response_model=model_job.Job)
 def find_job(id: str, request: Request):
     if (job := request.app.database["job"].find_one({"_id": id})) is not None:
         return job
@@ -47,8 +47,8 @@ def find_job(id: str, request: Request):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Job with ID {id} not found")
 
 
-@router.put("/{user_id}/{id}", response_description="Update a job", response_model=models_job.Job)
-def update_job(id: str, request: Request, job: models_job.JobUpdate = Body(...)):
+@router.put("/{user_id}/{id}", response_description="Update a job", response_model=model_job.Job)
+def update_job(id: str, request: Request, job: model_job.JobUpdate = Body(...)):
     job = {k: v for k, v in job.dict().items() if v is not None}
 
     if len(job) >= 1:
