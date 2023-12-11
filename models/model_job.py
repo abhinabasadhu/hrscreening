@@ -1,6 +1,8 @@
 import uuid
-from typing import Optional, List
+from typing import Optional
+import datetime
 from pydantic import BaseModel, Field
+
 
 class User(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
@@ -10,6 +12,7 @@ class User(BaseModel):
     company_postcode: str = Field(...)
     email: str = Field(...)
     job_ids: Optional[list] = Field(default=[])
+    timestamp = Field(default=datetime.datetime.now())
 
     class Config:
         allow_population_by_field_name = True
@@ -31,10 +34,13 @@ class UserUpdate(BaseModel):
 class Job(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     job_title: str = Field(...)
+    type: str = Field(...)
+    salary: str = Field(...)
     description: str = Field(...)
     skill_requirements: list = Field(...)
     custom_requirements: list = Field(...)
     candidates: Optional[list] = Field(default=[])
+    timestamp = Field(default=datetime.datetime.now())
 
     class Config:
         allow_population_by_field_name = True
@@ -44,6 +50,8 @@ class Job(BaseModel):
 class JobUpdate(BaseModel):
     job_title: Optional[str]
     description: Optional[str]
+    type: Optional[str]
+    salary: Optional[str]
     skill_requirements: Optional[list]
     custom_requirements: Optional[list]
     candidates: Optional[list]

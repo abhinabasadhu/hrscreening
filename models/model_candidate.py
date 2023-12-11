@@ -1,3 +1,4 @@
+import datetime
 import uuid
 from typing import Optional
 from pydantic import BaseModel, Field
@@ -13,6 +14,8 @@ class Candidate(BaseModel):
     skills: list = Field(...)
     education: list = Field(...)
     experience: list = Field(...)
+    timestamp = Field(default=datetime.datetime.now())
+
 
     class Config:
         allow_population_by_field_name = True
